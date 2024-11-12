@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Macros</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f8fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            width: 300px;
+            padding: 20px;
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            font-size: 20px;
+            color: #333;
+        }
+        label {
+            display: block;
+            margin-top: 10px;
+            font-size: 14px;
+            color: #555;
+        }
+        input[type="number"], select {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .radio-group {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+        .radio-group label {
+            font-size: 14px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+        .result {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .result h2 {
+            font-size: 18px;
+            color: #333;
+        }
+        .result p {
+            font-size: 14px;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Calcula tus macros</h1>
+        
+        <!-- Género -->
+        <label>Género:</label>
+        <div class="radio-group">
+            <label><input type="radio" name="genero" value="mujer" checked> Mujer</label>
+            <label><input type="radio" name="genero" value="hombre"> Hombre</label>
+        </div>
+        
+        <!-- Edad -->
+        <label>Edad:</label>
+        <input type="number" id="edad" placeholder="Edad en años">
+        
+        <!-- Peso -->
+        <label>Peso (kg):</label>
+        <input type="number" id="peso" placeholder="Peso en kg">
+        
+        <!-- Talla -->
+        <label>Altura (cm):</label>
+        <input type="number" id="altura" placeholder="Altura en cm">
+        
+        <!-- Nivel de actividad física -->
+        <label>Nivel de actividad física:</label>
+        <select id="actividad">
+            <option value="1.2">Sedentario</option>
+            <option value="1.375">Ligeramente Activo</option>
+            <option value="1.55">Moderadamente Activo</option>
+            <option value="1.725">Muy Activo</option>
+            <option value="1.9">Extremadamente Activo</option>
+        </select>
+        
+        <!-- Objetivo -->
+        <label>Objetivo:</label>
+        <div class="radio-group">
+            <label><input type="radio" name="objetivo" value="definicion" checked> Definición</label>
+            <label><input type="radio" name="objetivo" value="volumen"> Volumen</label>
+        </div>
+        
+        <!-- Botón para calcular -->
+        <button onclick="calcularMacros()">Calcular</button>
+        
+        <!-- Resultados -->
+        <div class="result" id="resultado">
+            <!-- Los resultados aparecerán aquí -->
+        </div>
+    </div>
+
+    <script>
+        function calcularMacros() {
+            // Obtener datos del usuario
+            const genero = document.querySelector('input[name="genero"]:checked').value;
+            const edad = parseInt(document.getElementById("edad").value);
+            const peso = parseFloat(document.getElementById("peso").value);
+            const altura = parseInt(document.getElementById("altura").value);
+            const actividad = parseFloat(document.getElementById("actividad").value);
+            const objetivo = document.querySelector('input[name="objetivo"]:checked').value;
+            
+            // Validar que los campos tengan valores
+            if (isNaN(edad) || isNaN(peso) || isNaN(altura)) {
+                alert("Por favor, completa todos los campos.");
+                return;
+            }
+            
+            // Calcular Tasa Metabólica Basal (TMB)
+            let tmb;
+            if (genero === "hombre") {
+                tmb = 88.36 + (13.4 * peso) + (4.8 * altura) - (5.7 * edad);
+            } else {
+                tmb = 447.6 + (9.2 * peso) + (3.1 * altura) - (4.3 * edad);
+            }
+
+            // Calorías según nivel de actividad
+            let calorias = tmb * actividad;
+
+            // Ajuste según el objetivo
+            if (objetivo === "definicion") {
+                calorias *= 0.85;  // Reducir un 15%
+            } else if (objetivo === "volumen") {
+                calorias *= 1.15;  // Aumentar un 15%
+            }
+            
+            // Cálculo de macros
+            const proteinas = peso * 2;  // 2 gramos de proteína por kg de peso
+            const grasas = (calorias * 0.3) / 9;  // 30% de las calorías de grasas, 1 gramo de grasa = 9 calorías
+            const carbohidratos = (calorias - (proteinas * 4) - (grasas * 9)) / 4;  // Calorías restantes para carbohidratos
+
+            // Mostrar los resultados
+            document.getElementById("resultado").innerHTML = `
+                <h2>Tu consumo debería ser:</h2>
+                <p><strong>${Math.round(calorias)}</strong> calorías por día.</p>
+                <p>Proteínas: ${Math.round(proteinas)} gramos al día</p>
+                <p>Carbohidratos: ${Math.round(carbohidratos)} gramos al día</p>
+                <p>Grasas: ${Math.round(grasas)} gramos al día</p>
+            `;
+        }
+    </script>
+</body>
+</html>
